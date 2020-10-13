@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PlaysLTCWrapper")]
+[assembly: AssemblyTitle("RePlays Origin")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PlaysLTCWrapper")]
+[assembly: AssemblyProduct("RePlays Origin")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3a6c3c06-54dc-4436-9a0c-84f77814c85e")]
+[assembly: Guid("75cc1321-8ceb-44c6-a150-675ccac7c11e")]
 
 // Version information for an assembly consists of the following four values:
 //
