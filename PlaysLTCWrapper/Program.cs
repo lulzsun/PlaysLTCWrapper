@@ -62,9 +62,11 @@ namespace PlaysLTCWrapper.TestProgram {
                 Console.WriteLine("Video capture ready, can start recording: {0}", msg.Pid);
 
                 //if (AutomaticRecording == true)
-                ltc.SetKeyBinds();
-                ltc.StartRecording();
-                recordingService.StartRecording();
+                if (!recordingService.IsRecording) {
+                    ltc.SetKeyBinds();
+                    ltc.StartRecording();
+                    recordingService.StartRecording();
+                }
             };
 
             ltc.ProcessTerminated += (sender, msg) => {

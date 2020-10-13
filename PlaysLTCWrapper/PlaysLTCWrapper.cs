@@ -25,7 +25,7 @@ namespace PlaysLTCWrapper {
                 switch (type) {
                     case "LTC:handshake":
                         GetEncoderSupportLevel();
-                        SetSavePaths("F:\\Videos\\Plays\\", "F:\\Videos\\Plays\\.temp\\");
+                        SetSavePaths("F:/Videos/Plays/", "F:/Videos/Plays/.temp/");
                         SetGameDVRQuality(10, 30, 720);
 
                         ConnectionHandshakeArgs connectionHandshakeArgs = new ConnectionHandshakeArgs {
@@ -77,7 +77,19 @@ namespace PlaysLTCWrapper {
                         OnVideoCaptureReady(videoCaptureReadyArgs);
                         break;
                     case "LTC:recordingError":
-                        Console.WriteLine("Recording Error code: {0}", Int32.Parse(jsonObject["data"]["code"].ToString()));
+                        int errorCode = Int32.Parse(jsonObject["data"]["code"].ToString());
+                        Console.Write("Recording Error code: {0} ", errorCode);
+                        switch (errorCode) {
+                            case 11:
+                                Console.WriteLine("- Issue with video directories");
+                                break;
+                            case 16:
+                                Console.WriteLine("- Issue with disk space");
+                                break;
+                            default:
+                                Console.WriteLine();
+                                break;
+                        }
                         break;
                     case "LTC:gameScreenSizeChanged":
                         Console.WriteLine("Game screen size changed, {0}x{1}", jsonObject["data"]["width"], jsonObject["data"]["height"]);
