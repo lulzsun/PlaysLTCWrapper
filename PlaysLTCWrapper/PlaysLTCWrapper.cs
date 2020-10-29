@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 using SimpleTCP;
 
 namespace PlaysLTCWrapper {
-    class LTCProcess {
+    public class LTCProcess {
         SimpleTcpServer server;
         Process ltcProcess;
         public void Connect() {

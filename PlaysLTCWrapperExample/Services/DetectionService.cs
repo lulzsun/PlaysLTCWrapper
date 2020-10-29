@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace ReplaysOrigin.Services {
-    class DetectionService {
+namespace PlaysLTCWrapper.Services {
+    public class DetectionService {
         JArray gameDetectionsJson;
         JArray nonGameDetectionsJson;
 

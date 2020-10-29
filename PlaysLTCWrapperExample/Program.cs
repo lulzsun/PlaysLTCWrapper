@@ -1,7 +1,7 @@
-﻿using System;
-using ReplaysOrigin.Services;
+﻿using PlaysLTCWrapper.Services;
+using System;
 
-namespace PlaysLTCWrapper.TestProgram {
+namespace PlaysLTCWrapper.Example {
     class Program {
         static void Main(string[] args) {
             RecordingService recordingService = new RecordingService();

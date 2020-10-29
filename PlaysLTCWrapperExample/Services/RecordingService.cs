@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace ReplaysOrigin.Services {
-    class RecordingService {
+namespace PlaysLTCWrapper.Services {
+    public class RecordingService {
         private Session currentSession = new Session(0, "Game Unknown");
         public bool IsRecording { get; internal set; }
 
