@@ -5,7 +5,10 @@ A wrapper class that connects to Plays LTC (recording module for Plays.tv or ReP
 ## TO-DO
 - Documentation
 - Remove need of Dependencies
+  - [SimpleTCP](https://github.com/BrandonPotter/SimpleTCP)
+  - [Json.NET](https://www.newtonsoft.com/json)
 
 ## Purpose
 
-This will make it possible to use the recording functions of Plays in various applications using C#. For example, it can be used to create a recording interface with C# Windows Forms. (much more memory efficient than Electron.js!!!)
+This will make it possible to use the recording functions of Plays in various applications using C#. 
+For example, it can be used to create a recording interface with C# Windows Forms. (much more memory efficient than Electron.js!!!)
