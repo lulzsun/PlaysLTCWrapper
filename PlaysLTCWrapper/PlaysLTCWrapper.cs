@@ -4,8 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace PlaysLTCWrapper {
     public class LTCProcess {
@@ -52,8 +51,9 @@ namespace PlaysLTCWrapper {
                     Console.WriteLine("RECEIVE: " + msg);
 
                     string jsonData = msg;
-                    JObject jsonObject = GetDataType(jsonData);
-                    string type = jsonObject["type"].ToString();
+                    JsonElement jsonElement = GetDataType(jsonData);
+                    string type = jsonElement.GetProperty("type").GetString();
+                    var data = jsonElement.GetProperty("data");
 
                     switch (type)
                     {
@@ -64,61 +64,61 @@ namespace PlaysLTCWrapper {
 
                             ConnectionHandshakeArgs connectionHandshakeArgs = new ConnectionHandshakeArgs
                             {
-                                Version = jsonObject["data"]["version"].ToString(),
-                                IntegrityCheck = jsonObject["data"]["integrityCheck"].ToString()
+                                Version = data.GetProperty("version").ToString(),
+                                IntegrityCheck = data.GetProperty("integrityCheck").ToString(),
                             };
                             OnConnectionHandshake(connectionHandshakeArgs);
                             break;
                         case "LTC:processCreated":
                             ProcessCreatedArgs processCreatedArgs = new ProcessCreatedArgs
                             {
-                                Pid = Int32.Parse(jsonObject["data"]["pid"].ToString()),
-                                ExeFile = jsonObject["data"]["exeFile"].ToString(),
-                                CmdLine = jsonObject["data"]["cmdLine"].ToString()
+                                Pid = data.GetProperty("pid").GetInt32(),
+                                ExeFile = data.GetProperty("exeFile").GetString(),
+                                CmdLine = data.GetProperty("cmdLine").GetString()
                             };
                             OnProcessCreated(processCreatedArgs);
                             break;
                         case "LTC:processTerminated":
                             ProcessTerminatedArgs processTerminatedArgs = new ProcessTerminatedArgs
                             {
-                                Pid = Int32.Parse(jsonObject["data"]["pid"].ToString())
+                                Pid = data.GetProperty("pid").GetInt32(),
                             };
                             OnProcessTerminated(processTerminatedArgs);
                             break;
                         case "LTC:graphicsLibLoaded":
                             GraphicsLibLoadedArgs graphicsLibLoadedArgs = new GraphicsLibLoadedArgs
                             {
-                                Pid = Int32.Parse(jsonObject["data"]["pid"].ToString()),
-                                ModuleName = jsonObject["data"]["moduleName"].ToString()
+                                Pid = data.GetProperty("pid").GetInt32(),
+                                ModuleName = data.GetProperty("moduleName").GetString()
                             };
                             OnGraphicsLibLoaded(graphicsLibLoadedArgs);
                             break;
                         case "LTC:moduleLoaded":
                             ModuleLoadedArgs moduleLoadedArgs = new ModuleLoadedArgs
                             {
-                                Pid = Int32.Parse(jsonObject["data"]["pid"].ToString()),
-                                ModuleName = jsonObject["data"]["moduleName"].ToString()
+                                Pid = data.GetProperty("pid").GetInt32(),
+                                ModuleName = data.GetProperty("moduleName").GetString()
                             };
                             OnModuleLoaded(moduleLoadedArgs);
                             break;
                         case "LTC:gameLoaded":
                             GameLoadedArgs gameLoadedArgs = new GameLoadedArgs
                             {
-                                Pid = Int32.Parse(jsonObject["data"]["pid"].ToString()),
-                                Width = Int32.Parse(jsonObject["data"]["size"]["width"].ToString()),
-                                Height = Int32.Parse(jsonObject["data"]["size"]["height"].ToString())
+                                Pid = data.GetProperty("pid").GetInt32(),
+                                Width = data.GetProperty("size").GetProperty("width").GetInt32(),
+                                Height = data.GetProperty("size").GetProperty("height").GetInt32(),
                             };
                             OnGameLoaded(gameLoadedArgs);
                             break;
                         case "LTC:videoCaptureReady":
                             VideoCaptureReadyArgs videoCaptureReadyArgs = new VideoCaptureReadyArgs
                             {
-                                Pid = Int32.Parse(jsonObject["data"]["pid"].ToString())
+                                Pid = data.GetProperty("pid").GetInt32()
                             };
                             OnVideoCaptureReady(videoCaptureReadyArgs);
                             break;
                         case "LTC:recordingError":
-                            int errorCode = Int32.Parse(jsonObject["data"]["code"].ToString());
+                            int errorCode = data.GetProperty("code").GetInt32();
                             Console.Write("Recording Error code: {0} ", errorCode);
                             switch (errorCode)
                             {
@@ -137,21 +137,21 @@ namespace PlaysLTCWrapper {
                             }
                             break;
                         case "LTC:gameScreenSizeChanged":
-                            Console.WriteLine("Game screen size changed, {0}x{1}", jsonObject["data"]["width"], jsonObject["data"]["height"]);
+                            Console.WriteLine("Game screen size changed, {0}x{1}", data.GetProperty("width").GetInt32(), data.GetProperty("height").GetInt32());
                             break;
                         case "LTC:saveStarted":
-                            Console.WriteLine("Started saving recording to file, {0}", jsonObject["data"]["filename"]);
+                            Console.WriteLine("Started saving recording to file, {0}", data.GetProperty("filename").GetString());
                             break;
                         case "LTC:saveFinished":
                             Console.WriteLine("Finished saving recording to file, {0}, {1}x{2}, {3}, {4}",
-                                                jsonObject["data"]["fileName"],
-                                                jsonObject["data"]["width"],
-                                                jsonObject["data"]["height"],
-                                                jsonObject["data"]["duration"],
-                                                jsonObject["data"]["recMode"]);
+                                                data.GetProperty("fileName"),
+                                                data.GetProperty("width"),
+                                                data.GetProperty("height"),
+                                                data.GetProperty("duration"),
+                                                data.GetProperty("recMode"));
                             break;
                         default:
-                            Console.WriteLine("WARNING: WAS SENT AN EVENT THAT DOES NOT MATCH CASE: {0}", jsonObject);
+                            Console.WriteLine("WARNING: WAS SENT AN EVENT THAT DOES NOT MATCH CASE: {0}", jsonData);
                             break;
                     }
                 }
@@ -252,12 +252,12 @@ namespace PlaysLTCWrapper {
             }
         }
 
-        public JObject GetDataType(string jsonData) {
-            JObject jsonObject = JsonConvert.DeserializeObject<JObject>(jsonData);
+        public JsonElement GetDataType(string jsonString) {
+            JsonElement jsonElement = JsonDocument.Parse(jsonString).RootElement;
             //Console.WriteLine(jsonObject);
             //Console.WriteLine("===================================");
 
-            return jsonObject;
+            return jsonElement;
         }
 
         #region ConnectionHandshake
