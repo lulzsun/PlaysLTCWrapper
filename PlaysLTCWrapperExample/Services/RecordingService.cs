@@ -23,12 +23,12 @@ namespace PlaysLTCWrapper.Services {
         }
 
         public void StartRecording() {
-            Console.WriteLine("Start Recording: {0}, {1}", currentSession.Pid, currentSession.GameTitle);
+            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Start Recording: {0}, {1}", currentSession.Pid, currentSession.GameTitle));
             IsRecording = true;
         }
 
         public void StopRecording() {
-            Console.WriteLine("Stop Recording: {0}, {1}", currentSession.Pid, currentSession.GameTitle);
+            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Stop Recording: {0}, {1}", currentSession.Pid, currentSession.GameTitle));
             IsRecording = false;
         }
     }

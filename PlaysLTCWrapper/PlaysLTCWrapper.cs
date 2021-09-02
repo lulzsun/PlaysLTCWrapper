@@ -29,7 +29,7 @@ namespace PlaysLTCWrapper {
             };
 
             ltcProcess.OutputDataReceived += new DataReceivedEventHandler((s, e) => {
-                Console.WriteLine(e.Data);
+                PrettyConsole.Writeline(ConsoleColor.DarkCyan, "LTCPROCESS: ", e.Data);
             });
 
             ltcProcess.Start();
@@ -47,11 +47,10 @@ namespace PlaysLTCWrapper {
                         streamByte = ns.ReadByte();
                     }
 
-                    string msg = stringBuilder.ToString();
-                    Console.WriteLine("RECEIVE: " + msg);
+                    string msg = stringBuilder.ToString().Replace("\n", "").Replace("\r", "").Trim();
+                    PrettyConsole.Writeline(ConsoleColor.Cyan, "RECEIVED: ", msg);
 
-                    string jsonData = msg;
-                    JsonElement jsonElement = GetDataType(jsonData);
+                    JsonElement jsonElement = GetDataType(msg);
                     string type = jsonElement.GetProperty("type").GetString();
                     var data = jsonElement.GetProperty("data");
 
@@ -119,7 +118,7 @@ namespace PlaysLTCWrapper {
                             break;
                         case "LTC:recordingError":
                             int errorCode = data.GetProperty("code").GetInt32();
-                            Console.Write("Recording Error code: {0} ", errorCode);
+                            PrettyConsole.Writeline(ConsoleColor.Red, "ERROR: ", string.Format("Recording Error code: {0} ", errorCode));
                             switch (errorCode)
                             {
                                 case 11:
@@ -137,21 +136,21 @@ namespace PlaysLTCWrapper {
                             }
                             break;
                         case "LTC:gameScreenSizeChanged":
-                            Console.WriteLine("Game screen size changed, {0}x{1}", data.GetProperty("width").GetInt32(), data.GetProperty("height").GetInt32());
+                            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Game screen size changed, {0}x{1}", data.GetProperty("width").GetInt32(), data.GetProperty("height").GetInt32()));
                             break;
                         case "LTC:saveStarted":
-                            Console.WriteLine("Started saving recording to file, {0}", data.GetProperty("filename").GetString());
+                            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Started saving recording to file, {0}", data.GetProperty("filename").GetString()));
                             break;
                         case "LTC:saveFinished":
-                            Console.WriteLine("Finished saving recording to file, {0}, {1}x{2}, {3}, {4}",
+                            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Finished saving recording to file, {0}, {1}x{2}, {3}, {4}",
                                                 data.GetProperty("fileName"),
                                                 data.GetProperty("width"),
                                                 data.GetProperty("height"),
                                                 data.GetProperty("duration"),
-                                                data.GetProperty("recMode"));
+                                                data.GetProperty("recMode")));
                             break;
                         default:
-                            Console.WriteLine("WARNING: WAS SENT AN EVENT THAT DOES NOT MATCH CASE: {0}", jsonData);
+                            PrettyConsole.Writeline(ConsoleColor.Yellow, "WARNING: ", string.Format("WAS SENT AN EVENT THAT DOES NOT MATCH CASE: {0}", msg));
                             break;
                     }
                 }
@@ -248,14 +247,12 @@ namespace PlaysLTCWrapper {
             if(ns != null && server != null) {
                 byte[] jsonBytes = Encoding.Default.GetBytes(json);
                 ns.Write(jsonBytes, 0, jsonBytes.Length);     //sending the message
-                Console.WriteLine("SEND: " + json);
+                PrettyConsole.Writeline(ConsoleColor.Green, "SENT: ", json);
             }
         }
 
         public JsonElement GetDataType(string jsonString) {
             JsonElement jsonElement = JsonDocument.Parse(jsonString).RootElement;
-            //Console.WriteLine(jsonObject);
-            //Console.WriteLine("===================================");
 
             return jsonElement;
         }
@@ -338,5 +335,16 @@ namespace PlaysLTCWrapper {
             VideoCaptureReady?.Invoke(this, e);
         }
         #endregion
+    }
+
+    public class PrettyConsole
+    {
+        public static void Writeline(ConsoleColor titleColor, string title, string message)
+        {
+            Console.ForegroundColor = titleColor;
+            Console.Write(title);
+            Console.ResetColor();
+            Console.WriteLine(message);
+        }
     }
 }
