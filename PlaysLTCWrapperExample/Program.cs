@@ -73,6 +73,10 @@ namespace PlaysLTCWrapper.Example {
                 ltc.LoadGameModule(msg.Pid);
             };
 
+            ltc.GameBehaviorDetected += (sender, msg) => {
+                ltc.StartAutoHookedGame(msg.Pid);
+            };
+
             ltc.VideoCaptureReady += (sender, msg) => {
                 //if (AutomaticRecording == true)
                 if (!recordingService.IsRecording) {

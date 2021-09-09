@@ -115,6 +115,13 @@ namespace PlaysLTCWrapper {
                             OnGameLoaded(gameLoadedArgs);
                             WriteToLog("INFO", string.Format("Game finished loading: {0}, {1}x{2}", gameLoadedArgs.Pid, gameLoadedArgs.Width, gameLoadedArgs.Height));
                             break;
+                        case "LTC:gameBehaviorDetected":
+                            GameBehaviorDetectedArgs gameBehaviorDetectedArgs = new GameBehaviorDetectedArgs {
+                                Pid = data.GetProperty("pid").GetInt32()
+                            };
+                            OnGameBehaviorDetected(gameBehaviorDetectedArgs);
+                            WriteToLog("INFO", string.Format("Game behavior detected for pid: {0}", gameBehaviorDetectedArgs.Pid));
+                            break;
                         case "LTC:videoCaptureReady":
                             VideoCaptureReadyArgs videoCaptureReadyArgs = new VideoCaptureReadyArgs
                             {
@@ -188,6 +195,14 @@ namespace PlaysLTCWrapper {
             Emit("LTC:scanForGraphLib", data);
         }
 
+        public void StartAutoHookedGame(int pid) {
+            string data =
+            "{" +
+                "'pid': " + pid +
+            "}";
+            Emit("LTC:startAutoHookedGame", data);
+        }
+
         public void SetGameName(string name) {
             string data =
             "{" +
@@ -236,7 +251,6 @@ namespace PlaysLTCWrapper {
         public void StopRecording() {
             Emit("LTC:stopRecording");
         }
-
 
         public void SetGameDVRQuality(int bitRate, int frameRate, int videoResolution) {
             Emit("LTC:setGameDVRQuality",
@@ -323,6 +337,16 @@ namespace PlaysLTCWrapper {
         public event EventHandler<GraphicsLibLoadedArgs> GraphicsLibLoaded;
         protected virtual void OnGraphicsLibLoaded(GraphicsLibLoadedArgs e) {
             GraphicsLibLoaded?.Invoke(this, e);
+        }
+        #endregion
+
+        #region GameBehaviorDetected
+        public class GameBehaviorDetectedArgs : EventArgs {
+            public int Pid { get; internal set; }
+        }
+        public event EventHandler<GameBehaviorDetectedArgs> GameBehaviorDetected;
+        protected virtual void OnGameBehaviorDetected(GameBehaviorDetectedArgs e) {
+            GameBehaviorDetected?.Invoke(this, e);
         }
         #endregion
 
