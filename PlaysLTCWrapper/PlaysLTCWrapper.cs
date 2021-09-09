@@ -29,7 +29,7 @@ namespace PlaysLTCWrapper {
             };
 
             ltcProcess.OutputDataReceived += new DataReceivedEventHandler((s, e) => {
-                PrettyConsole.Writeline(ConsoleColor.DarkCyan, "LTCPROCESS: ", e.Data);
+                WriteToLog("LTCPROCESS", e.Data);
             });
 
             ltcProcess.Start();
@@ -48,7 +48,7 @@ namespace PlaysLTCWrapper {
                     }
 
                     string msg = stringBuilder.ToString().Replace("\n", "").Replace("\r", "").Trim();
-                    PrettyConsole.Writeline(ConsoleColor.Cyan, "RECEIVED: ", msg);
+                    WriteToLog("RECEIVED", msg);
 
                     JsonElement jsonElement = GetDataType(msg);
                     string type = jsonElement.GetProperty("type").GetString();
@@ -67,6 +67,7 @@ namespace PlaysLTCWrapper {
                                 IntegrityCheck = data.GetProperty("integrityCheck").ToString(),
                             };
                             OnConnectionHandshake(connectionHandshakeArgs);
+                            WriteToLog("INFO", string.Format("Connection Handshake: {0}, {1}", connectionHandshakeArgs.Version, connectionHandshakeArgs.IntegrityCheck));
                             break;
                         case "LTC:processCreated":
                             ProcessCreatedArgs processCreatedArgs = new ProcessCreatedArgs
@@ -76,6 +77,7 @@ namespace PlaysLTCWrapper {
                                 CmdLine = data.GetProperty("cmdLine").GetString()
                             };
                             OnProcessCreated(processCreatedArgs);
+                            WriteToLog("INFO", string.Format("Process Created: {0}, {1}, {2}", processCreatedArgs.Pid, processCreatedArgs.ExeFile, processCreatedArgs.CmdLine));
                             break;
                         case "LTC:processTerminated":
                             ProcessTerminatedArgs processTerminatedArgs = new ProcessTerminatedArgs
@@ -83,6 +85,7 @@ namespace PlaysLTCWrapper {
                                 Pid = data.GetProperty("pid").GetInt32(),
                             };
                             OnProcessTerminated(processTerminatedArgs);
+                            WriteToLog("INFO", string.Format("Process Terminated: {0}", processTerminatedArgs.Pid));
                             break;
                         case "LTC:graphicsLibLoaded":
                             GraphicsLibLoadedArgs graphicsLibLoadedArgs = new GraphicsLibLoadedArgs
@@ -91,6 +94,7 @@ namespace PlaysLTCWrapper {
                                 ModuleName = data.GetProperty("moduleName").GetString()
                             };
                             OnGraphicsLibLoaded(graphicsLibLoadedArgs);
+                            WriteToLog("INFO", string.Format("Graphics Lib Loaded: {0}, {1}", graphicsLibLoadedArgs.Pid, graphicsLibLoadedArgs.ModuleName));
                             break;
                         case "LTC:moduleLoaded":
                             ModuleLoadedArgs moduleLoadedArgs = new ModuleLoadedArgs
@@ -99,6 +103,7 @@ namespace PlaysLTCWrapper {
                                 ModuleName = data.GetProperty("moduleName").GetString()
                             };
                             OnModuleLoaded(moduleLoadedArgs);
+                            WriteToLog("INFO", string.Format("Plays-ltc Recording Module Loaded: {0}, {1}", moduleLoadedArgs.Pid, moduleLoadedArgs.ModuleName));
                             break;
                         case "LTC:gameLoaded":
                             GameLoadedArgs gameLoadedArgs = new GameLoadedArgs
@@ -108,6 +113,7 @@ namespace PlaysLTCWrapper {
                                 Height = data.GetProperty("size").GetProperty("height").GetInt32(),
                             };
                             OnGameLoaded(gameLoadedArgs);
+                            WriteToLog("INFO", string.Format("Game finished loading: {0}, {1}x{2}", gameLoadedArgs.Pid, gameLoadedArgs.Width, gameLoadedArgs.Height));
                             break;
                         case "LTC:videoCaptureReady":
                             VideoCaptureReadyArgs videoCaptureReadyArgs = new VideoCaptureReadyArgs
@@ -115,34 +121,35 @@ namespace PlaysLTCWrapper {
                                 Pid = data.GetProperty("pid").GetInt32()
                             };
                             OnVideoCaptureReady(videoCaptureReadyArgs);
+                            WriteToLog("INFO", string.Format("Video capture ready, can start recording: {0}", videoCaptureReadyArgs.Pid));
                             break;
                         case "LTC:recordingError":
                             int errorCode = data.GetProperty("code").GetInt32();
-                            PrettyConsole.Writeline(ConsoleColor.Red, "ERROR: ", string.Format("Recording Error code: {0} ", errorCode));
+                            string errorDetails = "";
                             switch (errorCode)
                             {
                                 case 11:
-                                    Console.WriteLine("- Issue with video directory");
+                                    errorDetails = "- Issue with video directory";
                                     break;
                                 case 12:
-                                    Console.WriteLine("- Issue with temp directory");
+                                    errorDetails = "- Issue with temp directory";
                                     break;
                                 case 16:
-                                    Console.WriteLine("- Issue with disk space");
+                                    errorDetails = "- Issue with disk space";
                                     break;
                                 default:
-                                    Console.WriteLine();
                                     break;
                             }
+                            WriteToLog("ERROR", string.Format("Recording Error code: {0} {1}", errorCode, errorDetails));
                             break;
                         case "LTC:gameScreenSizeChanged":
-                            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Game screen size changed, {0}x{1}", data.GetProperty("width").GetInt32(), data.GetProperty("height").GetInt32()));
+                            WriteToLog("INFO", string.Format("Game screen size changed, {0}x{1}", data.GetProperty("width").GetInt32(), data.GetProperty("height").GetInt32()));
                             break;
                         case "LTC:saveStarted":
-                            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Started saving recording to file, {0}", data.GetProperty("filename").GetString()));
+                            WriteToLog("INFO", string.Format("Started saving recording to file, {0}", data.GetProperty("filename").GetString()));
                             break;
                         case "LTC:saveFinished":
-                            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Finished saving recording to file, {0}, {1}x{2}, {3}, {4}",
+                            WriteToLog("INFO", string.Format("Finished saving recording to file, {0}, {1}x{2}, {3}, {4}",
                                                 data.GetProperty("fileName"),
                                                 data.GetProperty("width"),
                                                 data.GetProperty("height"),
@@ -150,7 +157,7 @@ namespace PlaysLTCWrapper {
                                                 data.GetProperty("recMode")));
                             break;
                         default:
-                            PrettyConsole.Writeline(ConsoleColor.Yellow, "WARNING: ", string.Format("WAS SENT AN EVENT THAT DOES NOT MATCH CASE: {0}", msg));
+                            WriteToLog("WARNING", string.Format("WAS SENT AN EVENT THAT DOES NOT MATCH CASE: {0}", msg));
                             break;
                     }
                 }
@@ -247,7 +254,7 @@ namespace PlaysLTCWrapper {
             if(ns != null && server != null) {
                 byte[] jsonBytes = Encoding.Default.GetBytes(json);
                 ns.Write(jsonBytes, 0, jsonBytes.Length);     //sending the message
-                PrettyConsole.Writeline(ConsoleColor.Green, "SENT: ", json);
+                WriteToLog("SENT", json);
             }
         }
 
@@ -256,6 +263,24 @@ namespace PlaysLTCWrapper {
 
             return jsonElement;
         }
+
+        #region Log
+        public class LogArgs : EventArgs {
+            public string Title { get; internal set; }
+            public string Message { get; internal set; }
+        }
+        public void WriteToLog(string _Title, string _Message) {
+            LogArgs logArgs = new LogArgs {
+                Title = _Title,
+                Message = _Message
+            };
+            OnLog(logArgs);
+        }
+        public event EventHandler<LogArgs> Log;
+        protected virtual void OnLog(LogArgs e) {
+            Log?.Invoke(this, e);
+        }
+        #endregion
 
         #region ConnectionHandshake
         public class ConnectionHandshakeArgs : EventArgs {
@@ -335,16 +360,5 @@ namespace PlaysLTCWrapper {
             VideoCaptureReady?.Invoke(this, e);
         }
         #endregion
-    }
-
-    public class PrettyConsole
-    {
-        public static void Writeline(ConsoleColor titleColor, string title, string message)
-        {
-            Console.ForegroundColor = titleColor;
-            Console.Write(title);
-            Console.ResetColor();
-            Console.WriteLine(message);
-        }
     }
 }

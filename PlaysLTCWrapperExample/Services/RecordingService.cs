@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PlaysLTCWrapper.Services {
+namespace PlaysLTCWrapper.Example.Services {
     public class RecordingService {
         private Session currentSession = new Session(0, "Game Unknown");
         public bool IsRecording { get; internal set; }
@@ -23,12 +23,12 @@ namespace PlaysLTCWrapper.Services {
         }
 
         public void StartRecording() {
-            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Start Recording: {0}, {1}", currentSession.Pid, currentSession.GameTitle));
+            Logger.WriteLine(ConsoleColor.Magenta, "INFO: ", string.Format("Start Recording: {0}, {1}", currentSession.Pid, currentSession.GameTitle));
             IsRecording = true;
         }
 
         public void StopRecording() {
-            PrettyConsole.Writeline(ConsoleColor.Magenta, "INFO: ", string.Format("Stop Recording: {0}, {1}", currentSession.Pid, currentSession.GameTitle));
+            Logger.WriteLine(ConsoleColor.Magenta, "INFO: ", string.Format("Stop Recording: {0}, {1}", currentSession.Pid, currentSession.GameTitle));
             IsRecording = false;
         }
     }

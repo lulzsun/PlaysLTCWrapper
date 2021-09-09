@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.Json;
 
-namespace PlaysLTCWrapper.Services {
+namespace PlaysLTCWrapper.Example.Services {
     public class DetectionService {
         JsonElement[] gameDetectionsJson;
         JsonElement[] nonGameDetectionsJson;
