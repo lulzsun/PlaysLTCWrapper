@@ -4,9 +4,6 @@ A wrapper class that connects to Plays LTC (recording module for Plays.tv or ReP
 
 ## TO-DO
 - Documentation
-- Remove need of Dependencies
-  - [SimpleTCP](https://github.com/BrandonPotter/SimpleTCP)
-  - [Json.NET](https://www.newtonsoft.com/json)
 
 ## Purpose
 
