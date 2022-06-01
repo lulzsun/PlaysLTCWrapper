@@ -39,7 +39,7 @@ namespace PlaysLTCWrapper.Example {
             };
 
             ltc.ConnectionHandshake += (sender, msg) => {
-                ltc.SetCaptureMode(49152); //ORB_GAMEDVR_SET_CAPTURE_MODE ?????
+                ltc.SetCaptureMode("automatic");
                 ltc.SetGameDVRCaptureEngine(1); //1 = nvidia ?????
             };
 
@@ -95,7 +95,7 @@ namespace PlaysLTCWrapper.Example {
                 }
             };
 
-            ltc.Connect();
+            ltc.Connect(Environment.GetEnvironmentVariable("LocalAppData") + @"\Plays-ltc\0.54.7\PlaysTVComm.exe");
 
             Console.ReadKey();
         }
